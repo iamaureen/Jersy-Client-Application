@@ -5,6 +5,8 @@
  */
 package edu.asu.cse.server.fooditemsclient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import javax.xml.bind.JAXBException;
@@ -22,8 +24,9 @@ public class InputHandler {
         // TODO code application logic here
         
         Scanner input = new Scanner(System.in);
-        System.out.println("Select: \n 1. Add Food Item \n 2. Get Food Item (Use Ids)" );
+        System.out.println("Select: \n 1. Add Food Item \n 2. Get Food Item (Use Ids)\n Option:" );
         int option = Integer.parseInt(input.next());
+        System.out.println("You Entered :: " + option);
         
         FoodItem foodItem = new FoodItem();
         
@@ -68,6 +71,29 @@ public class InputHandler {
                 break; 
             }               
             case 2:{
+                
+                  //list to hold multiple ids of the food object
+                  List<Integer> foodItems = new ArrayList<>();
+                  
+                  //take input of the ids
+                  System.out.println("Enter the ids of the food object - separate with spaces");
+                  input.nextLine();
+                  String foodIDs = input.nextLine();
+	    	  String[] selectedIDs = foodIDs.split(" ");
+                  
+                  //add the ids into the list
+                  for(int i=0;i<selectedIDs.length;i++){
+                      foodItems.add(Integer.parseInt(selectedIDs[i]));
+                  }
+                  
+                  //arrange the ids list into specific xml format given in the doc
+                  SelectedFoodItems selectedItems = new SelectedFoodItems();
+                  selectedItems.setFoodItem(foodItems);
+                  
+                  //call the client and pass the xml object of ids
+                  FoodItemClient client = new FoodItemClient();
+                  client.getFoodItemFromXML(selectedItems);
+                  
                 break;
             }
                 

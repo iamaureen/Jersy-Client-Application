@@ -1,5 +1,8 @@
 package edu.asu.cse.server.fooditems;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -8,6 +11,8 @@ import javax.ws.rs.Produces;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -36,8 +41,7 @@ public class FoodItemsServer {
         
         try {
 
-            ItemXMLHandler foodItemXML = new ItemXMLHandler();
-            
+            ItemXMLHandler foodItemXML = new ItemXMLHandler();            
             
             if (foodItem != null) {
 
@@ -64,6 +68,21 @@ public class FoodItemsServer {
         }
 
         return null;
+    }
+    
+    @POST
+    @Path("/getFoodItem")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response getFoodItem(SelectedFoodItems selectedFoodItems) throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException{
+
+        List<Integer> foodItemId = selectedFoodItems.getFoodItem();
+        
+        ItemXMLHandler foodItemXML = new ItemXMLHandler();  
+        
+        RetrievedFoodItems retrievedFoodItems = foodItemXML.getFoodItem(foodItemId);
+        //String r  = foodItemXML.getFoodItem(foodItemId);
+        
+        return Response.status(200).entity(retrievedFoodItems).build();
     }
 
 }

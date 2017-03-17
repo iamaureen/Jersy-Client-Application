@@ -15,6 +15,8 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -132,11 +134,91 @@ public class ItemXMLHandler {
         
         
     }
+    
+    public RetrievedFoodItems getFoodItem(List<Integer> foodItemId) throws UnsupportedEncodingException, FileNotFoundException, ParserConfigurationException, SAXException, IOException{
+        
+        String rs = null;
+        List<FoodItem> foodItemsListFromXml = new ArrayList<FoodItem>();  ;
+        //get the path for xml file
+        String dir =  this.getClass().getProtectionDomain().getCodeSource().getLocation().toString();
+        String path = getFolderPath(dir);
+        String fullPath =  path;
+        File file = new File(fullPath);
+        
+        if(file.exists()){
+            
+            rs = "file found";
+            
+            InputStream inputStream= new FileInputStream(file);
+	    Reader reader = new InputStreamReader(inputStream,"UTF-8");
+	    InputSource src = new InputSource(reader);
+            
+            DocumentBuilderFactory builderFac = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFac.newDocumentBuilder();
+            Document d = builder.parse(src);
+            
+            NodeList allNodes = d.getElementsByTagName("FoodItem");
+            
+            //get all the food objects from the xml file and put them into a list
+            for (int i = 0; i < allNodes.getLength(); i++) {
+                
+                Element eElement = (Element) allNodes.item(i);
+                FoodItem foodObj = new FoodItem();
+                
+                foodObj.setID(Integer.parseInt(eElement.getElementsByTagName("id").item(0).getTextContent()));
+                foodObj.setCategory(eElement.getElementsByTagName("category").item(0).getTextContent());
+                foodObj.setCountry(eElement.getAttribute("country"));
+                foodObj.setName(eElement.getElementsByTagName("name").item(0).getTextContent());
+                foodObj.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
+                foodObj.setPrice(eElement.getElementsByTagName("price").item(0).getTextContent());
+                
+                foodItemsListFromXml.add(foodObj);
+            }
+            
+            List<FoodItem> validFoodItems = new ArrayList<FoodItem>();
+            List<Integer> invalidFoodItems = new ArrayList<Integer>();
+            FoodItem food;
+            
+            //foodItemId-->id of food object from client
+            
+            for (Integer foodId : foodItemId) {
+                food = searchItem(foodId, foodItemsListFromXml);
+                if (food != null) {
+                    validFoodItems.add(food);
+                } else {
+                    invalidFoodItems.add(foodId);
+                }
+            }
+            
+            RetrievedFoodItems retrievedFoodItems = new RetrievedFoodItems();
+            retrievedFoodItems.setFoodItem(validFoodItems);
+            retrievedFoodItems.setInvalidFoodItem(invalidFoodItems);
+
+            return retrievedFoodItems;
+            //return rs;
+            
+         }else{
+            System.out.println("File not found");
+            rs = "File not found";
+           // return rs;
+        }
+        
+        return null;
+    }
+    
+      private FoodItem searchItem(Integer foodId, List<FoodItem> foodItemsList ) {
+        for (FoodItem food : foodItemsList) {
+            if (food.getID() == foodId) {
+                return food;
+            }
+        }
+        return null;
+    }
 
     private String getFolderPath(String dir) throws UnsupportedEncodingException {
         
             //dir = file:/C:/Users/Ishrat Ahmed/Documents/NetBeansProjects/FoodItems/target/FoodItems/WEB-INF/classes/edu/asu/cse/server/fooditems/ItemXMLHandler.class
-            //first split against file:/, then first /FoodItems/
+            //first split against file:/, then /FoodItems/
             //we get C:\Users\Ishrat Ahmed\Documents\NetBeansProjects\
             String fullPath = URLDecoder.decode(dir, "UTF-8");
             String pathArr[] = fullPath.split("file:/");
@@ -149,5 +231,7 @@ public class ItemXMLHandler {
             return path;
             
     }
+
+  
     
 }

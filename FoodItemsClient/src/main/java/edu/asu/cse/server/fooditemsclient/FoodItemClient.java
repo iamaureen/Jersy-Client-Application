@@ -10,6 +10,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -64,4 +65,31 @@ public class FoodItemClient {
         }
         
     }
+
+    void getFoodItemFromXML(SelectedFoodItems selectedItems) throws JAXBException {
+       //set the path to post method for get
+        webResource = client.resource(BASE_URI).path("inventory/getFoodItem");
+        
+        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, selectedItems);
+        
+//        String output = response.getEntity(String.class);
+//        System.out.println("Server response : ");
+//        System.out.println(output);
+
+        if (response.getStatus() == 200) {
+            RetrievedFoodItems r = response.getEntity(RetrievedFoodItems.class);
+            JAXBContext context = JAXBContext.newInstance(RetrievedFoodItems.class);
+
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            m.marshal(r, System.out);
+            
+        }
+        else{
+            System.out.println("Failed :: "+response.getStatus());
+        }
+    }
+
+    
 }
