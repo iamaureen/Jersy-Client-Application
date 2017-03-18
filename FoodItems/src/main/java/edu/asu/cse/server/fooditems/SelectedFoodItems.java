@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Ishrat Ahmed
  */
-@XmlRootElement(name = "SelectedFoodItems")
+@XmlRootElement(name = "SelectedFoodItems", namespace="http://cse564.asu.edu/PoxAssignment")
 public class SelectedFoodItems {
     List<Integer> foodItem;
     

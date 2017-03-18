@@ -5,11 +5,13 @@
  */
 package edu.asu.cse.server.fooditemsclient;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import javax.xml.bind.JAXBException;
+
 
 /**
  *
@@ -24,7 +26,7 @@ public class InputHandler {
         // TODO code application logic here
         
         Scanner input = new Scanner(System.in);
-        System.out.println("Select: \n 1. Add Food Item \n 2. Get Food Item (Use Ids)\n Option:" );
+        System.out.println("Select: 1.Add Items (Hard Coded)\n 2. Get Items(Hard Coded)\n 3. Add Food Item (dynamically)\n 4. Get Food Item (Use Ids)(Dynamically)\n Option:" );
         int option = Integer.parseInt(input.next());
         System.out.println("You Entered :: " + option);
         
@@ -33,6 +35,22 @@ public class InputHandler {
         switch(option){
             //add food item
             case 1:{
+                
+                break;
+            }
+            case 2:{
+                String getItem = "<SelectedFoodItems xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
+                                    +"<FoodItemId>101</FoodItemId>"
+                                    +"<FoodItemId>156</FoodItemId>"
+                               + "</SelectedFoodItems>";
+                
+                FoodItemClient client = new FoodItemClient();
+                client.getFoodItemToXML(getItem);
+                
+                
+                break;
+            }
+            case 3:{
                 //take the input
                 System.out.println(System.getProperty("user.dir"));
                 System.out.println("Enter Country Name:");
@@ -70,7 +88,7 @@ public class InputHandler {
                 
                 break; 
             }               
-            case 2:{
+            case 4:{
                 
                   //list to hold multiple ids of the food object
                   List<Integer> foodItems = new ArrayList<>();

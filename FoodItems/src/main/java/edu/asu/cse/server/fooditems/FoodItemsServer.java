@@ -1,6 +1,7 @@
 package edu.asu.cse.server.fooditems;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -11,7 +12,11 @@ import javax.ws.rs.Produces;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamSource;
 import org.xml.sax.SAXException;
 
 
@@ -21,18 +26,7 @@ import org.xml.sax.SAXException;
 @Path("inventory")
 public class FoodItemsServer {
 
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent to
-     * the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
-    }
-
+    
   
     @POST
     @Path("/addFoodItem")
@@ -73,9 +67,15 @@ public class FoodItemsServer {
     @POST
     @Path("/getFoodItem")
     @Produces(MediaType.APPLICATION_XML)
-    public Response getFoodItem(SelectedFoodItems selectedFoodItems) throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException{
+    public Response getFoodItem(String selectedFoodItems) throws UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException, JAXBException{
 
-        List<Integer> foodItemId = selectedFoodItems.getFoodItem();
+        
+        JAXBContext jaxbContext = JAXBContext.newInstance(SelectedFoodItems.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        StringBuffer xmlStr = new StringBuffer(selectedFoodItems);
+        SelectedFoodItems sfi = (SelectedFoodItems) jaxbUnmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())));
+               
+        List<Integer> foodItemId = sfi.getFoodItem();        
         
         ItemXMLHandler foodItemXML = new ItemXMLHandler();  
         

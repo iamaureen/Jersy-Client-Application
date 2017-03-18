@@ -65,6 +65,8 @@ public class FoodItemClient {
         }
         
     }
+    
+
 
     void getFoodItemFromXML(SelectedFoodItems selectedItems) throws JAXBException {
        //set the path to post method for get
@@ -84,11 +86,33 @@ public class FoodItemClient {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             m.marshal(r, System.out);
+
+        } else {
+            System.out.println("Failed :: " + response.getStatus() + "  " + response.toString());
+        }
+
+       
+    }
+
+    void getFoodItemToXML(String item) throws JAXBException {
+        webResource = client.resource(BASE_URI).path("inventory/getFoodItem");
+        
+        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, item);
+        
+         if (response.getStatus() == 200) {
+            RetrievedFoodItems r = response.getEntity(RetrievedFoodItems.class);
+            JAXBContext context = JAXBContext.newInstance(RetrievedFoodItems.class);
+
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            m.marshal(r, System.out);
             
         }
         else{
-            System.out.println("Failed :: "+response.getStatus());
+            System.out.println("Failed :: "+response.getStatus()+"  " +response.toString());
         }
+        
     }
 
     

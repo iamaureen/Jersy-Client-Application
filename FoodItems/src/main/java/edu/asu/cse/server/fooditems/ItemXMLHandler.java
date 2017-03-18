@@ -179,7 +179,7 @@ public class ItemXMLHandler {
             List<Integer> invalidFoodItems = new ArrayList<Integer>();
             FoodItem food;
             
-            //foodItemId-->id of food object from client
+            //foodItemId-->list that contains id of food object from client
             
             for (Integer foodId : foodItemId) {
                 food = searchItem(foodId, foodItemsListFromXml);
