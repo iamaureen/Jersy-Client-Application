@@ -13,10 +13,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,6 +51,7 @@ public class ItemXMLHandler {
         String rs = null;
         String itemID = null;
         boolean itemFound = false;
+        int minRandom;
         //System.properties("user.dir") gave the absolute path address for glassfish server instead of the current project location. so used this 
         //function to get the path to the project location and then the xml file
         String dir =  this.getClass().getProtectionDomain().getCodeSource().getLocation().toString();
@@ -68,10 +70,20 @@ public class ItemXMLHandler {
             Document d = builder.parse(src);
             
             NodeList allNodes = d.getElementsByTagName("FoodItem");
+            //get all the ids in a list
+            List<Integer> allID = new ArrayList<>();
+            for (int i = 0; i < allNodes.getLength(); i++) {
+                
+                Element eachElement = (Element) allNodes.item(i);                
+                String id = eachElement.getElementsByTagName("id").item(0).getTextContent();
+                allID.add(Integer.parseInt(id));		
+            }
             
+            //search xml to see if the item exist or not
             for (int i = 0; i < allNodes.getLength(); i++) {
                 
                 Element eachElement = (Element) allNodes.item(i);
+                
                 String category = eachElement.getElementsByTagName("category").item(0).getTextContent();
 		String name = eachElement.getElementsByTagName("name").item(0).getTextContent();
                 if (foodItem.getCategory().equals(category) && foodItem.getName().equals(name)) {
@@ -90,7 +102,15 @@ public class ItemXMLHandler {
 
                 //setting the ID of new Element
                 Element elementID = d.createElement("id");
-                elementID.setTextContent(String.valueOf(foodItem.getID()));
+                
+                // set object ID; check if ID is in the list, generate new ID
+               Random id = new Random();               
+               int randID = ThreadLocalRandom.current().nextInt(0, 500);
+               while(allID.contains(randID)){                   
+                   randID = ThreadLocalRandom.current().nextInt(0, 500);
+               }
+               foodItem.setID(randID);
+               elementID.setTextContent(String.valueOf(foodItem.getID()));
                 
                 //name
                 Element elementName = d.createElement("name");

@@ -10,11 +10,11 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
 
 /**
  *
@@ -32,18 +32,15 @@ public class FoodItemClient {
         client = Client.create(config);
     }
     
-    //add food item 
-    public void addFoodItemToXML(FoodItem foodObj) throws JAXBException{
-        //set the path to post method
-        webResource = client.resource(BASE_URI).path("inventory/addFoodItem");
+    
+    
+    void addFoodItemToXML(String addItem) throws JAXBException {
         
-        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, foodObj);
+        webResource = client.resource(BASE_URI).path("inventory");
         
-//        String output = response.getEntity(String.class);
-//        System.out.println("Server response : ");
-//        System.out.println(output);
+        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, addItem);
         
-        if (response.getStatus() == 200) {
+         if (response.getStatus() == 200) {
             FoodItemExists exists = response.getEntity(FoodItemExists.class);
             JAXBContext context = JAXBContext.newInstance(FoodItemExists.class);
 
@@ -53,49 +50,20 @@ public class FoodItemClient {
             m.marshal(exists, System.out);
             
         } else if (response.getStatus() == 201) {
+            
             FoodItemAdded added = response.getEntity(FoodItemAdded.class);
-
             JAXBContext context = JAXBContext.newInstance(FoodItemAdded.class);
-
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
             m.marshal(added, System.out);
-
+            
         }
-        
     }
+
     
 
-
-    void getFoodItemFromXML(SelectedFoodItems selectedItems) throws JAXBException {
-       //set the path to post method for get
-        webResource = client.resource(BASE_URI).path("inventory/getFoodItem");
-        
-        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, selectedItems);
-        
-//        String output = response.getEntity(String.class);
-//        System.out.println("Server response : ");
-//        System.out.println(output);
-
-        if (response.getStatus() == 200) {
-            RetrievedFoodItems r = response.getEntity(RetrievedFoodItems.class);
-            JAXBContext context = JAXBContext.newInstance(RetrievedFoodItems.class);
-
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            m.marshal(r, System.out);
-
-        } else {
-            System.out.println("Failed :: " + response.getStatus() + "  " + response.toString());
-        }
-
-       
-    }
-
     void getFoodItemToXML(String item) throws JAXBException {
-        webResource = client.resource(BASE_URI).path("inventory/getFoodItem");
+        webResource = client.resource(BASE_URI).path("inventory");
         
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, item);
         
@@ -114,6 +82,28 @@ public class FoodItemClient {
         }
         
     }
+    
+    void inValidDemo(String invalidString) throws JAXBException{
+        
+        webResource = client.resource(BASE_URI).path("inventory");
+        
+        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML).post(ClientResponse.class, invalidString);
+        
+         if (response.getStatus() == 200) {
+            InvalidMessage r = response.getEntity(InvalidMessage.class);
+            JAXBContext context = JAXBContext.newInstance(InvalidMessage.class);            
+          
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            m.marshal(r, System.out);
+            
+        }
+        else{
+            System.out.println("Failed :: "+response.getStatus()+"  " +response.toString());
+        }
+        
+    }
 
+    
     
 }

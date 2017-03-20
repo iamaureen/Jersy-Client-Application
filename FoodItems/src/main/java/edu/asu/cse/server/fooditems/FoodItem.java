@@ -61,7 +61,7 @@ public class FoodItem {
         return description;
     }
      
-    @XmlElement(name="cateogry")
+    @XmlElement(name="category")
     public String getCategory() {
         return category;
     }
@@ -78,5 +78,9 @@ public class FoodItem {
         this.price = price;
     }
        
+    @Override
+    public String toString() {
+        return "FoodItem{" + "ID=" + ID + ", name=" + name + ", description=" + description + ", category=" + category + ", price=" + price + ", country=" + country + '}';
+    }
 
 }

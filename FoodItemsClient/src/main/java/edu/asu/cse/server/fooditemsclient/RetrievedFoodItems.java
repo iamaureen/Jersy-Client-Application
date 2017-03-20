@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Ishrat Ahmed
  */
-@XmlRootElement(name = "RetrievedFoodItems")
+@XmlRootElement(name = "RetrievedFoodItems", namespace = "http://cse564.asu.edu/PoxAssignment")
 public class RetrievedFoodItems {
     List<FoodItem> foodItem;
      List<Integer> invalidFoodItem;

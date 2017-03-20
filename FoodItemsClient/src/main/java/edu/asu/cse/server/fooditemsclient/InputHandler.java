@@ -5,13 +5,8 @@
  */
 package edu.asu.cse.server.fooditemsclient;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 import javax.xml.bind.JAXBException;
-
 
 /**
  *
@@ -24,99 +19,102 @@ public class InputHandler {
      */
     public static void main(String[] args) throws JAXBException {
         // TODO code application logic here
-        
+
         Scanner input = new Scanner(System.in);
-        System.out.println("Select: 1.Add Items (Hard Coded)\n 2. Get Items(Hard Coded)\n 3. Add Food Item (dynamically)\n 4. Get Food Item (Use Ids)(Dynamically)\n Option:" );
+        System.out.println("Please Note: All the inputs are hardcoded.\n"
+                + "Select :\n 1.Add a new Item (If it is a new item, item will be added, id will be displayed."
+                + " If the item exists, the existing id will be shown) \n "
+                + "2.Get Items (one exists and one does not exist)\n "
+                + "3.Get Items (both item exists)\n "
+                + "4.Invalid Item (wrong xml) \n "
+                + "5.Invalid Item (wrong xml for adding an Item) \n "
+                + "6.Invalid Item (wrong xml for getting an Item)\n "
+                + "Option:");
         int option = Integer.parseInt(input.next());
         System.out.println("You Entered :: " + option);
-        
+
         FoodItem foodItem = new FoodItem();
-        
-        switch(option){
+
+        switch (option) {
             //add food item
-            case 1:{
-                
+            case 1: {
+                String addItem = "<NewFoodItems xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
+                        + "<FoodItem country=\"GB\">"
+                        + "<name>Pasty</name>"
+                        + "<description>Tender cubes of steak, potatoes and swede wrapped in flakey short crust pastry.  Seasoned with lots of pepper.  Served with mashed potatoes, peas and a side of gravy</description>"
+                        + "<category>Dinner</category> "
+                        + "<price>15.95</price> "
+                        + "</FoodItem>"
+                        + "</NewFoodItems >";
+
+                FoodItemClient client = new FoodItemClient();
+                client.addFoodItemToXML(addItem);
+
                 break;
             }
-            case 2:{
+            case 2: {
                 String getItem = "<SelectedFoodItems xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
-                                    +"<FoodItemId>101</FoodItemId>"
-                                    +"<FoodItemId>156</FoodItemId>"
-                               + "</SelectedFoodItems>";
-                
+                        + "<FoodItemId>101</FoodItemId>"
+                        + "<FoodItemId>156</FoodItemId>"
+                        + "</SelectedFoodItems>";
+
                 FoodItemClient client = new FoodItemClient();
                 client.getFoodItemToXML(getItem);
-                
-                
+
                 break;
             }
-            case 3:{
-                //take the input
-                System.out.println(System.getProperty("user.dir"));
-                System.out.println("Enter Country Name:");
-		String country = input.next();
-		System.out.println("Enter the Name:");
-                String name = input.next();
-                System.out.println("Enter Description:");
-		String description = input.next();		
-		System.out.println("Enter Category:");
-		String category = input.next();		
-		System.out.println("Enter Price:");
-		String price = input.next();
-                
-                //check if valid xml input
-                if(country!=null || name!=null || category!=null || description!=null || price!=null){
-                    
-                    //set the pojo
-                    Random id = new Random();
-                    
-                    foodItem.setID(id.nextInt(500));
-                    foodItem.setCountry(country);
-                    foodItem.setName(name);
-                    foodItem.setDescription(description);
-                    foodItem.setCategory(category);
-                    foodItem.setPrice(price);
-                    
-                    
-                }else{
-                    System.out.println("<InvalidMessage xmlns=”http://cse564.asu.edu/PoxAssignment”/>\n");
-                }
-                
-                //call client and send the food object to add in the xml
+            case 3: {
+                String getItem = "<SelectedFoodItems xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
+                        + "<FoodItemId>101</FoodItemId>"
+                        + "<FoodItemId>102</FoodItemId>"
+                        + "</SelectedFoodItems>";
+
                 FoodItemClient client = new FoodItemClient();
-                client.addFoodItemToXML(foodItem);
-                
-                break; 
-            }               
-            case 4:{
-                
-                  //list to hold multiple ids of the food object
-                  List<Integer> foodItems = new ArrayList<>();
-                  
-                  //take input of the ids
-                  System.out.println("Enter the ids of the food object - separate with spaces");
-                  input.nextLine();
-                  String foodIDs = input.nextLine();
-	    	  String[] selectedIDs = foodIDs.split(" ");
-                  
-                  //add the ids into the list
-                  for(int i=0;i<selectedIDs.length;i++){
-                      foodItems.add(Integer.parseInt(selectedIDs[i]));
-                  }
-                  
-                  //arrange the ids list into specific xml format given in the doc
-                  SelectedFoodItems selectedItems = new SelectedFoodItems();
-                  selectedItems.setFoodItem(foodItems);
-                  
-                  //call the client and pass the xml object of ids
-                  FoodItemClient client = new FoodItemClient();
-                  client.getFoodItemFromXML(selectedItems);
-                  
+                client.getFoodItemToXML(getItem);
+
                 break;
+
             }
-                
-            
+            case 4: {
+                String invalidItem = "< xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
+                        + "<FoodItemId>101</FoodItemId>"
+                        + "<FoodItemId>156</FoodItemId>"
+                        + "</>";
+
+                FoodItemClient client = new FoodItemClient();
+                client.inValidDemo(invalidItem);
+                break;
+
+            }
+            case 5: {
+
+                String invalidAddItem = "<NewItems xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
+                        + "<FoodItem country=\"GB\">"
+                        + "<name>Pasty</name>"
+                        + "<description>Tender cubes of steak, potatoes and swede wrapped in flakey short crust pastry.  Seasoned with lots of pepper.  Served with mashed potatoes, peas and a side of gravy</description>"
+                        + "<price>15.95</price> "
+                        + "</FoodItem>"
+                        + "</NewItems >";
+
+                FoodItemClient client = new FoodItemClient();
+                client.inValidDemo(invalidAddItem);
+                break;
+
+            }
+            case 6: {
+
+                String invalidGetItem = "<SelectedFood xmlns=\"http://cse564.asu.edu/PoxAssignment\">"
+                        + "<Food>101</FoodItemId>"
+                        + "<FoodItemId>156</FoodItemId>"
+                        + "</SelectedFood>";
+
+                FoodItemClient client = new FoodItemClient();
+                client.inValidDemo(invalidGetItem);
+                break;
+
+            }
+
         }
     }
-    
+
 }
